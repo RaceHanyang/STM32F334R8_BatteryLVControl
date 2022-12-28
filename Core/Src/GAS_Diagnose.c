@@ -9,7 +9,7 @@
 
 diagonoseSet_t diagnoseSet;
 volatile uint32_t ValueOfADC[2];
-BatteryDiagnose_t T_BatteryDiagnose;
+BatteryDiagnose_t T_BatteryDiagnose; ///T_BatteryDiagnose
 
 void GAS_Diagnose_run_10ms(){
 

@@ -1,0 +1,17 @@
+20221228_0344
+- BMS 온도 메시지 ID확인하기: BMS에서 온도 메시지 따로 보낼 수 있고 ID세팅 가능. 어떤 데이터를 보내는지, ID가 무엇인지 물어봐야함
+- IMD 시그널 범위 확인(정상작동, 비정상작동 frequency)
+- 트쌀은 받는거...?(GAS_indicator.c)
+
+20221229_0254
+GAS_Diagnose.c:12: multiple definition of `T_BatteryDiagnose'; GAS_Can.c:19: first defined here
+=> T_BatteryDiagnose가 GAS_Diagnose.h에 extern으로 선언되어 있고, 이를 받아서 쓰는건데 GAS_Can.c랑 GAS_Diagnose.c에서 중복선언되었다고.(아래도 같은 문제들)
+Extern을 잘못 쓴건가?
+근데 이렇게 쓰는게 맞는 것 같은데..? 다른 보드에도 이렇게 쓴 거 아닌가..?
+GAS_PWM.c:16: multiple definition of `R_BatteryTemp'; GAS_Can.c:18: first defined here
+
+GAS_Scheduler.c:24: multiple definition of `pwmChangeFlag'; GAS_PWM.c:22: first defined here
+
+GAS_Vadc.c:12: multiple definition of `ValueOfADC'; GAS_Diagnose.c:11: first defined here
+
+++문제해결: STlink 없이 디버그할 때는 디버거 설정 들어가서 Internal debugger 써야함...
