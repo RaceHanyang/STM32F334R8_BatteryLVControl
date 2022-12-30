@@ -16,12 +16,12 @@ CAN_TxHeaderTypeDef canTxHeader;
 uint8_t canRx0Data[8];
 uint32_t TxMailBox;
 BatteryTemp_t R_BatteryTemp;
-BatteryDiagnose_t T_BatteryDiagnose;
+//BatteryDiagnose_t T_BatteryDiagnose;///
 
 
 
 uint32_t BatteryInsideID = 0x405DB; //221228_0338(GAS_Can.c): need to be change to BMS temperature message id
-uint32_t BatteryFanCnt = 0x334C;	//221228_0338: THIS stm's CAN ID//testest//another test//testJira
+uint32_t BatteryFanCnt = 0x334C;	//221228_0338: THIS stm's CAN ID
 
 
 /*-------------------------Function Prototypes--------------------------------*/
