@@ -52,6 +52,7 @@ https://hnydiy.tistory.com/82
 2번: pwmChangeFlag를 안 쓰는것 같아서 GAS_PWM.h, GAS_PWM.c, GAS_Scheduler.c에서 모두 주석처리
 3번: GAS_Diagnose.c에서는 ValueOfADC안써서 주석처리
 
+**** 커밋에 날짜랑 시간 넣기!!!!!!!!!!
 
 	
 	
