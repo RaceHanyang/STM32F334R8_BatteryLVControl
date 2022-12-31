@@ -14,6 +14,8 @@
 
 
 BatteryTemp_t R_BatteryTemp;
+extern BatteryTemp_t R_BatteryTemp; ///
+
 
 pwmIn_t pwmIn15;
 pwmIn_t pwmIn16;

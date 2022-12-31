@@ -15,8 +15,8 @@ CAN_TxHeaderTypeDef canTxHeader;
 
 uint8_t canRx0Data[8];
 uint32_t TxMailBox;
-BatteryTemp_t R_BatteryTemp;
-extern BatteryDiagnose_t T_BatteryDiagnose;///
+extern BatteryTemp_t R_BatteryTemp; //221231_1558: extern added
+extern BatteryDiagnose_t T_BatteryDiagnose;///221231_1558: extern added
 
 
 

@@ -8,13 +8,15 @@ GAS_Diagnose.c:12: multiple definition of `T_BatteryDiagnose'; GAS_Can.c:19: fir
 => T_BatteryDiagnose가 GAS_Diagnose.h에 extern으로 선언되어 있고, 이를 받아서 쓰는건데 GAS_Can.c랑 GAS_Diagnose.c에서 중복선언되었다고.(아래도 같은 문제들)
 Extern을 잘못 쓴건가?
 근데 이렇게 쓰는게 맞는 것 같은데..? 다른 보드에도 이렇게 쓴 거 아닌가..?
-GAS_PWM.c:16: multiple definition of `R_BatteryTemp'; GAS_Can.c:18: first defined here
+1. GAS_PWM.c:16: multiple definition of `R_BatteryTemp'; GAS_Can.c:18: first defined here
+==>해결(221231_1604)
+2. GAS_Scheduler.c:24: multiple definition of `pwmChangeFlag'; GAS_PWM.c:22: first defined here
 
-GAS_Scheduler.c:24: multiple definition of `pwmChangeFlag'; GAS_PWM.c:22: first defined here
+3. GAS_Vadc.c:12: multiple definition of `ValueOfADC'; GAS_Diagnose.c:11: first defined here
 
-GAS_Vadc.c:12: multiple definition of `ValueOfADC'; GAS_Diagnose.c:11: first defined here
-
+4. GAS_Diagnose.c:12: multiple definition of `T_BatteryDiagnose'; GAS_Can.c:19: first defined here
 ++문제해결: STlink 없이 디버그할 때는 디버거 설정 들어가서 Internal debugger 써야함...
+==>해결(221231_1604)
 
 221231_0230
 저 extern문제... 문법이 잘못된 것 같지는 않은데 왜 저 error가 발생하는지 모르겠음. 심지어 이 기판 말고 다른데(SUBMCU-ShockValue, Cooling Control등)
@@ -29,3 +31,23 @@ https://hnydiy.tistory.com/82 참고
 글고 어나더 Question.
 GAS_Diagnose.c에서 측정한 프리차지, 릴레이, 트쌀, IMD 등을 BatteryInsideID = 0x405DB에 보내는 것 같은데... 스틈이 하나 더 있다?!
 Battery_Temp_Monitor(온도센서기판)에 있는 STM32_TempMonitorID = 0x405DC 얜 뭐지??
+
+221231_1604
+위에 1,4번 해결.
+https://hnydiy.tistory.com/82
+이거대로 함. GAS_Can.h에서 선언된 구조체들 extern 빼고, 
+1번: GAS_Diagnose.c에 
+	BatteryDiagnose_t T_BatteryDiagnose; 선언 후
+	extern BatteryDiagnose_t T_BatteryDiagnose; 선언
+	GAS_Can.c에는
+	extern BatteryDiagnose_t T_BatteryDiagnose;로 선언
+	
+4번: GAS_PWM.c에
+	BatteryTemp_t R_BatteryTemp;
+	extern BatteryTemp_t R_BatteryTemp; 선언
+	extern BatteryTemp_t R_BatteryTemp; 선언
+
+==> 수정사항들 반영한 BC-2 브렌치로 분리
+
+	
+	

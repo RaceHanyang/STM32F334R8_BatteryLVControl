@@ -45,9 +45,8 @@ typedef union{
 	}__attribute__((aligned(1),packed)) B;
 }BatteryDiagnose_t;
 
-extern BatteryTemp_t R_BatteryTemp;
+//extern BatteryTemp_t R_BatteryTemp;
 //extern BatteryDiagnose_t T_BatteryDiagnose;
-//extern BatteryDiagnose_t T_BatteryDiagnose;///
 //extern stm32_msg_t stm32_1;
 
 extern void GAS_Can_init(void);
