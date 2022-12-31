@@ -49,5 +49,8 @@ https://hnydiy.tistory.com/82
 
 ==> 수정사항들 반영한 BC-2 브렌치로 분리
 
+2번: pwmChangeFlag를 안 쓰는것 같아서 GAS_PWM.h, GAS_PWM.c, GAS_Scheduler.c에서 모두 주석처리
+
+
 	
 	

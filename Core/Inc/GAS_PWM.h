@@ -24,7 +24,8 @@ typedef struct{
 extern pwmIn_t pwmIn1;
 extern pwmIn_t pwmIn2;
 
-extern volatile uint8_t pwmChangeFlag;
+//volatile uint8_t pwmChangeFlag; ///changed //seems not used..?
+//extern volatile uint8_t pwmChangeFlag; //1231_1619: original
 
 extern void GAS_PWM_inputInit(void);
 extern void GAS_PWM_outputInit(void);

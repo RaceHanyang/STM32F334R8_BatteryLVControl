@@ -21,7 +21,8 @@ pwmIn_t pwmIn15;
 pwmIn_t pwmIn16;
 pwmIn_t pwmIn17;
 
-volatile uint8_t pwmChangeFlag = 0;
+//extern volatile uint8_t pwmChangeFlag = 0;///changed//seems not used..?
+//volatile uint8_t pwmChangeFlag = 0; //1231_1619: original
 
 void GAS_PWM_inputInit(void);
 void GAS_PWM_outputInit(void);

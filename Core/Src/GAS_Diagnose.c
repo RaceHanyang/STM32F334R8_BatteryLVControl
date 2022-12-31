@@ -11,7 +11,7 @@
 
 BatteryDiagnose_t T_BatteryDiagnose; ///branchtest 1231_1558
 
-volatile uint32_t ValueOfADC[2];
+//volatile uint32_t ValueOfADC[2]; //1231_1653: not used in this file
 extern BatteryDiagnose_t T_BatteryDiagnose; ///T_BatteryDiagnose
 
 void GAS_Diagnose_run_10ms(){
