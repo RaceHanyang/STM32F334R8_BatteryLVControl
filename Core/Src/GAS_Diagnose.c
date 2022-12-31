@@ -6,9 +6,10 @@
  */
 
 #include "GAS_Diagnose.h"
+#include "GAS_Can.h"///
 //diagonoseSet_t diagnoseSet; //221231_0136: Not used in this file: maybe GAS_Diagnose.h not used
 volatile uint32_t ValueOfADC[2];
-BatteryDiagnose_t T_BatteryDiagnose; ///T_BatteryDiagnose
+extern BatteryDiagnose_t T_BatteryDiagnose; ///T_BatteryDiagnose
 
 void GAS_Diagnose_run_10ms(){
 

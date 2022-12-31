@@ -5,7 +5,7 @@
  *      Author: Suprhimp
  */
 
-#include <GAS_Can.h>
+#include "GAS_Can.h"
 #include <stdio.h>
 
 CAN_FilterTypeDef sFilterConfig;
@@ -16,7 +16,7 @@ CAN_TxHeaderTypeDef canTxHeader;
 uint8_t canRx0Data[8];
 uint32_t TxMailBox;
 BatteryTemp_t R_BatteryTemp;
-//BatteryDiagnose_t T_BatteryDiagnose;///
+extern BatteryDiagnose_t T_BatteryDiagnose;///
 
 
 
