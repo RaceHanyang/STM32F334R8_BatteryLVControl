@@ -8,6 +8,9 @@
 #include "GAS_Diagnose.h"
 #include "GAS_Can.h"///
 //diagonoseSet_t diagnoseSet; //221231_0136: Not used in this file: maybe GAS_Diagnose.h not used
+
+BatteryDiagnose_t T_BatteryDiagnose; ///branchtest 1231_1558
+
 volatile uint32_t ValueOfADC[2];
 extern BatteryDiagnose_t T_BatteryDiagnose; ///T_BatteryDiagnose
 
