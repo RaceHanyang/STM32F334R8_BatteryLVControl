@@ -16,7 +16,7 @@ CAN_TxHeaderTypeDef canTxHeader;
 uint8_t canRx0Data[8];
 uint32_t TxMailBox;
 BatteryTemp_t R_BatteryTemp;
-//BatteryDiagnose_t T_BatteryDiagnose;///
+//BatteryDiagnose_t T_BatteryDiagnose;///230104: defined in GAS_Diagnose.c
 
 
 

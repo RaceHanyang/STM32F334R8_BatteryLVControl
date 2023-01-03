@@ -21,7 +21,7 @@ pwmIn_t pwmIn2;
 #define True 1
 
 volatile int gTimerCnt;
-volatile uint8_t pwmChangeFlag;
+//volatile uint8_t pwmChangeFlag; //230104: not used in this file
 Scheduler_task gTask;
 
 void GAS_Scheduler_init(void);

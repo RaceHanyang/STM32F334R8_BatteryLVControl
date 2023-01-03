@@ -13,13 +13,13 @@
 #include "stdio.h"
 
 
-BatteryTemp_t R_BatteryTemp;
+//BatteryTemp_t R_BatteryTemp; //230104: defined in GAS_Can.c
 
 pwmIn_t pwmIn15;
 pwmIn_t pwmIn16;
 pwmIn_t pwmIn17;
 
-volatile uint8_t pwmChangeFlag = 0;
+//volatile uint8_t pwmChangeFlag = 0; //230104: not used in this file
 
 void GAS_PWM_inputInit(void);
 void GAS_PWM_outputInit(void);
@@ -84,7 +84,7 @@ void GAS_PWM_Fan_run()
 	 * Change duty cycle by changing register CCR directly
 	 */
 
-	uint16_t T = R_BatteryTemp.B.HighestTemp/10;
+	uint16_t T = R_BatteryTemp.B.HighestTemp/10; ///
 
 	uint16_t per = T*4-60;
 	if (per<=20) per=20;
