@@ -30,4 +30,4 @@ https://hnydiy.tistory.com/82 참고
 GAS_Diagnose.c에서 측정한 프리차지, 릴레이, 트쌀, IMD 등을 BatteryInsideID = 0x405DB에 보내는 것 같은데... 스틈이 하나 더 있다?!
 Battery_Temp_Monitor(온도센서기판)에 있는 STM32_TempMonitorID = 0x405DC 얜 뭐지??
 
-123123123
+444555666
