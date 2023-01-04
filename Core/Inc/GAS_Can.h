@@ -15,13 +15,13 @@
 typedef union{
 	uint8_t TxData[8];
 	uint8_t RxData[8];
-	struct{
-		unsigned int HighestTemp : 12;
-		unsigned int LowestTemp : 12;
-		unsigned int MeanTemp : 12;
-		unsigned int reserved : 12;
-		unsigned int reserved1 : 12;
-		unsigned int reserved2: 4;
+	struct{ //230104: unsinged int => uint8_t
+		uint8_t HighestTemp : 12;
+		uint8_t LowestTemp : 12;
+		uint8_t MeanTemp : 12; 	//Average
+		uint8_t reserved : 12; 	//highestTemperature id
+		uint8_t reserved1 : 12;	//highestTemperature id
+		uint8_t reserved2: 4;
 
 	}__attribute__((aligned(1),packed)) B;
 
