@@ -21,7 +21,7 @@ extern BatteryDiagnose_t T_BatteryDiagnose;///221231_1558: extern added
 
 
 uint32_t BatteryInsideID = 0x405DB; //221228_0338(GAS_Can.c): need to be change to BMS temperature message id
-uint32_t BatteryFanCnt = 0x334C;	//221228_0338: THIS stm's CAN ID
+uint32_t BatteryFanCnt = 0x334C;	//221228_0338: THIS stm's CAN ID///
 
 
 /*-------------------------Function Prototypes--------------------------------*/
