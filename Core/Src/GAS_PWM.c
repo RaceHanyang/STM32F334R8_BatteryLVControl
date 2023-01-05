@@ -50,6 +50,8 @@ void GAS_PWM_outputInit(void)
 	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
 	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
 
+	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);//230105: why not existed?????
+
 	/*Turn on the fan!*/
 	HAL_GPIO_WritePin(Fan_On_GPIO_Port, Fan_On_Pin, GPIO_PIN_SET);
 }
@@ -84,24 +86,27 @@ void GAS_PWM_Fan_run()
 	 * Change duty cycle by changing register CCR directly
 	 */
 
-	uint16_t T = R_BatteryTemp.B.HighestTemp/10; ///
+	uint16_t T = R_BatteryTemp.B.HighestTemp; //230104: FIXED(/10 deleted)
+
 
 	uint16_t per = T*4-60;
-	if (per<=20) per=20;
-	else if (per>=100) per = 100;
+	if (per<=20) per=20;					//230105: under 20 degree C, min duty
+	else if (per>=100) per = 100;			//230105: over 40 degree C, Max duty
 
-	uint16_t duty = (per*287)/100;
+	uint16_t fanPulse = 287*(per/100); 		//230105: not duty... its pulse!!!! => name change(duty->fanPulse)
 
-	TIM1->CCR1=duty;
-	TIM1->CCR2=duty;
-	TIM1->CCR3=duty;
+	TIM1->CCR1=fanPulse;					//TIM1_CHANNEL1: fan control 3
+	TIM1->CCR2=fanPulse;					//TIM1_CHANNEL2: fan control 2
+	TIM1->CCR3=fanPulse;					//TIM1_CHANNEL3: fan control 1
 
-	TIM2->CCR1=duty;
-	TIM2->CCR2=duty;
-	TIM2->CCR3=duty;
+	TIM2->CCR1=fanPulse;					//TIM1_CHANNEL1: fan control 4
+	TIM2->CCR2=fanPulse;					//TIM1_CHANNEL2: fan control 5
+	TIM2->CCR3=fanPulse;					//TIM1_CHANNEL3: fan control 6
 
-	TIM3->CCR1=duty;
-	TIM3->CCR2=duty;
+	TIM3->CCR1=fanPulse;					//TIM1_CHANNEL1: fan control 7
+	TIM3->CCR2=fanPulse;					//TIM1_CHANNEL2: fan control 8
+
+	TIM3->CCR3=fanPulse;					//230105: why not existed???: fan control 9
 }
 
 
