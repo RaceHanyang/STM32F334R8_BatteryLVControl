@@ -30,9 +30,9 @@ void GAS_PWM_Check(TIM_HandleTypeDef *htim, pwmIn_t *pwmIn);
 void GAS_PWM_inputInit(void)
 {
 
-	HAL_TIM_IC_Start_IT(&htim15, TIM_CHANNEL_1);
-	HAL_TIM_IC_Start_IT(&htim16, TIM_CHANNEL_1);
-	HAL_TIM_IC_Start_IT(&htim17, TIM_CHANNEL_1);
+	HAL_TIM_IC_Start_IT(&htim15, TIM_CHANNEL_1);	//Fan_Tach_789
+	HAL_TIM_IC_Start_IT(&htim16, TIM_CHANNEL_1);	//Fan_Tach_456
+	HAL_TIM_IC_Start_IT(&htim17, TIM_CHANNEL_1);	//Fan_Tach_123
 
 
 }
