@@ -18,8 +18,11 @@
 pwmIn_t pwmIn15;
 pwmIn_t pwmIn16;
 pwmIn_t pwmIn17;
+/*230108_0300: added for fan selection*/
+volatile uint8_t fanSelect0 = 0;
+volatile uint8_t fanSelect1 = 0;
 
-//volatile uint8_t pwmChangeFlag = 0; //230104: not used in this file
+volatile uint8_t pwmChangeFlag; //230104: not used in this file//230108: use again
 
 void GAS_PWM_inputInit(void);
 void GAS_PWM_outputInit(void);
@@ -84,6 +87,9 @@ void GAS_PWM_Fan_run()
 	/*
 	 * PWM change duty cycle function
 	 * Change duty cycle by changing register CCR directly
+	 * 220108
+	 * write 9 duties every time
+	 * read only 3 fan duties at a time
 	 */
 
 	uint16_t T = R_BatteryTemp.B.HighestTemp; //230104: FIXED(/10 deleted)
@@ -107,6 +113,44 @@ void GAS_PWM_Fan_run()
 	TIM3->CCR2=fanPulse;					//TIM1_CHANNEL2: fan control 8
 
 	TIM3->CCR3=fanPulse;					//230105: why not existed???: fan control 9
+
+
+	/*
+	 * PWM input: select fan and calculate duty: 230108
+	 */
+	switch(pwmChangeFlag){
+	case 1:
+		HAL_GPIO_WritePin(Fan_Tach_S0_GPIO_Port, Fan_Tach_S0_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(Fan_Tach_S1_GPIO_Port, Fan_Tach_S1_Pin, GPIO_PIN_SET);
+		GAS_PWM_Check(htim15, pwmIn15); //read fan7
+		GAS_PWM_Check(htim16, pwmIn16); //read fan4
+		GAS_PWM_Check(htim17, pwmIn17); //read fan1
+		pwmChangeFlag ++;
+		break;
+
+	case 2:
+		HAL_GPIO_WritePin(Fan_Tach_S0_GPIO_Port, Fan_Tach_S0_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(Fan_Tach_S1_GPIO_Port, Fan_Tach_S1_Pin, GPIO_PIN_SET);
+		GAS_PWM_Check(htim15, pwmIn15); //read fan8
+		GAS_PWM_Check(htim16, pwmIn16); //read fan5
+		GAS_PWM_Check(htim17, pwmIn17); //read fan2
+		pwmChangeFlag ++;
+		break;
+
+	case 3:
+		HAL_GPIO_WritePin(Fan_Tach_S0_GPIO_Port, Fan_Tach_S0_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(Fan_Tach_S1_GPIO_Port, Fan_Tach_S1_Pin, GPIO_PIN_RESET);
+		GAS_PWM_Check(htim15, pwmIn15); //read fan9
+		GAS_PWM_Check(htim16, pwmIn16); //read fan6
+		GAS_PWM_Check(htim17, pwmIn17); //read fan3
+		pwmChangeFlag ++;
+		break;
+	default:
+		pwmChangeFlag = 1;
+	}
+
+
+
 }
 
 
@@ -114,7 +158,7 @@ void GAS_PWM_Check(TIM_HandleTypeDef *htim, pwmIn_t *pwmIn){
 
 			if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)
 			{
-				pwmIn->RisingEdgeValue = HAL_TIM_ReadCapturedValue(htim,TIM_CHANNEL_1);
+				pwmIn->RisingEdgeValue = HAL_TIM_ReadCapturedValue(htim,TIM_CHANNEL_1); //CCR1: pulse
 				htim->Instance->CNT = 0;
 				pwmIn->Period=pwmIn->RisingEdgeValue;
 			}
@@ -122,6 +166,22 @@ void GAS_PWM_Check(TIM_HandleTypeDef *htim, pwmIn_t *pwmIn){
 			{
 				pwmIn->FallingEdgeValue=HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
 				pwmIn->Width=pwmIn->FallingEdgeValue;
+				pwmIn->DutyCycle = (float)(pwmIn->FallingEdgeValue)/(float)(pwmIn->RisingEdgeValue)*100;
 			}
 
+}
+
+void GAS_FanSelect(uint8_t S0, uint8_t S1){
+
+	uint8_t SS = S0+S1;
+
+	if(SS == 0){
+		pwmChangeFlag = 0;
+	}else if(SS == 2){
+		pwmChangeFlag = 1;
+	}else if(S1 > S0){
+		pwmChangeFlag = 2;
+	}else if(S1 < S0){
+		pwmChangeFlag = 3;
+	}
 }
