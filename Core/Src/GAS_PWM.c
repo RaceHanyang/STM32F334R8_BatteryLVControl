@@ -122,27 +122,27 @@ void GAS_PWM_Fan_run()
 	case 1:
 		HAL_GPIO_WritePin(Fan_Tach_S0_GPIO_Port, Fan_Tach_S0_Pin, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(Fan_Tach_S1_GPIO_Port, Fan_Tach_S1_Pin, GPIO_PIN_SET);
-		GAS_PWM_Check(htim15, pwmIn15); //read fan7
-		GAS_PWM_Check(htim16, pwmIn16); //read fan4
-		GAS_PWM_Check(htim17, pwmIn17); //read fan1
+		GAS_PWM_Check(&htim15, &pwmIn15); //read fan7
+		GAS_PWM_Check(&htim16, &pwmIn16); //read fan4
+		GAS_PWM_Check(&htim17, &pwmIn17); //read fan1
 		pwmChangeFlag ++;
 		break;
 
 	case 2:
 		HAL_GPIO_WritePin(Fan_Tach_S0_GPIO_Port, Fan_Tach_S0_Pin, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(Fan_Tach_S1_GPIO_Port, Fan_Tach_S1_Pin, GPIO_PIN_SET);
-		GAS_PWM_Check(htim15, pwmIn15); //read fan8
-		GAS_PWM_Check(htim16, pwmIn16); //read fan5
-		GAS_PWM_Check(htim17, pwmIn17); //read fan2
+		GAS_PWM_Check(&htim15, &pwmIn15); //read fan8
+		GAS_PWM_Check(&htim16, &pwmIn16); //read fan5
+		GAS_PWM_Check(&htim17, &pwmIn17); //read fan2
 		pwmChangeFlag ++;
 		break;
 
 	case 3:
 		HAL_GPIO_WritePin(Fan_Tach_S0_GPIO_Port, Fan_Tach_S0_Pin, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(Fan_Tach_S1_GPIO_Port, Fan_Tach_S1_Pin, GPIO_PIN_RESET);
-		GAS_PWM_Check(htim15, pwmIn15); //read fan9
-		GAS_PWM_Check(htim16, pwmIn16); //read fan6
-		GAS_PWM_Check(htim17, pwmIn17); //read fan3
+		GAS_PWM_Check(&htim15, &pwmIn15); //read fan9
+		GAS_PWM_Check(&htim16, &pwmIn16); //read fan6
+		GAS_PWM_Check(&htim17, &pwmIn17); //read fan3
 		pwmChangeFlag ++;
 		break;
 	default:
