@@ -8,22 +8,28 @@
 #include <GAS_Can.h>
 #include <GAS_PWM.h>
 #include <stdio.h>
+#include <string.h>
 
 CAN_FilterTypeDef sFilterConfig;
 CAN_FilterTypeDef sFilterConfig2;
 CAN_RxHeaderTypeDef canRxHeader;
+CAN_RxHeaderTypeDef canRxHeader2;
 CAN_TxHeaderTypeDef canTxHeader;
+CAN_TxHeaderTypeDef canTxHeader2;
 
 uint8_t canRx0Data[8];
 uint32_t TxMailBox;
 BatteryTemp_t R_BatteryTemp;
 BatteryDiagnose_t T_BatteryDiagnose;
 FanStatusData_t T_FanStatusData;//230108: added
+TC_order_t R_TC_order;
 
-
-uint32_t BatteryInsideID = 0x405DB; //230104: need to be change to BMS temperature message id. Fix when BMS setted
+uint32_t BMSID = 0x405DB; //230104: need to be change to BMS temperature message id. Fix when BMS setted
 uint32_t stm32BattInfoTX1 = 0x334C01;	//221228_0338: THIS stm's CAN ID //testest///testtest
 uint32_t stm32BattInfoTX2 = 0x334C02;	//230108_2100: Cooling fan duty cycles
+
+uint32_t TC_order_ID = 0x275B01;
+
 
 /*-------------------------Function Prototypes--------------------------------*/
 
@@ -44,17 +50,17 @@ void GAS_Can_txSetting(void)
 	  canTxHeader.DLC	=	8;
 
 	  //canTxHeader.StdId = (0x283>>18)&0x7ff;
-	  canTxHeader1.ExtId = stm32BattInfoTX2;
-	  canTxHeader1.IDE	= CAN_ID_EXT;
-	  canTxHeader1.RTR	= CAN_RTR_DATA;
-	  canTxHeader1.DLC	=	8;
+	  canTxHeader2.ExtId = stm32BattInfoTX2;
+	  canTxHeader2.IDE	= CAN_ID_EXT;
+	  canTxHeader2.RTR	= CAN_RTR_DATA;
+	  canTxHeader2.DLC	=	8;
 
 }
 
 void GAS_Can_rxSetting(void){
 
-	sFilterConfig.FilterIdHigh = (BatteryInsideID<<3)>>16;				/*first 2byte in 29bit (shift need to IED,RTR,0)*/
-	sFilterConfig.FilterIdLow = (0xffff & (BatteryInsideID << 3)) | (1<<2);	/*second 2byte in 29bit + IDE (shift need to IED,RTR,0/)*/
+	sFilterConfig.FilterIdHigh = (BMSID<<3)>>16;				/*first 2byte in 29bit (shift need to IED,RTR,0)*/
+	sFilterConfig.FilterIdLow = (0xffff & (BMSID << 3)) | (1<<2);	/*second 2byte in 29bit + IDE (shift need to IED,RTR,0/)*/
 	sFilterConfig.FilterMaskIdHigh = (0x0ffffff0<<3)>>16;
 	sFilterConfig.FilterMaskIdLow =(0xffff & (0x0FFFFFF0 << 3)) | (1<<2);
 	sFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0;
@@ -70,6 +76,25 @@ void GAS_Can_rxSetting(void){
 	     /* Filter configuration Error */
 	     Error_Handler();
 	 }
+
+
+	 //220108_2223 TC control mode RX, from STM32F450_Cooling_Control-FanVar GAS_Can.c
+	 sFilterConfig2.FilterIdHigh = (TC_order_ID<<3)>>16;				/*first 2byte in 29bit (shift need to IED,RTR,0)*/
+	 sFilterConfig2.FilterIdLow = (0xffff & (TC_order_ID << 3)) | (1<<2);	/*second 2byte in 29bit + IDE (shift need to IED,RTR,0/)*/
+	 sFilterConfig2.FilterMaskIdHigh = (0x0fffffff<<3)>>16;
+	 sFilterConfig2.FilterMaskIdLow =(0xffff & (0x0FFFFFFF << 3)) | (1<<2);
+	 sFilterConfig2.FilterFIFOAssignment = CAN_RX_FIFO1;
+	 sFilterConfig2.FilterBank = 15;   /* YOU MUST USE FILTERBANK over 14 if YOU USE CAN2!!!!!!!!!!!!!!! */
+	 sFilterConfig2.FilterMode = CAN_FILTERMODE_IDMASK;
+	 sFilterConfig2.FilterScale = CAN_FILTERSCALE_32BIT;
+	 sFilterConfig2.FilterActivation = ENABLE;
+	 sFilterConfig2.SlaveStartFilterBank = 15;
+	 if (HAL_CAN_ConfigFilter(&hcan, &sFilterConfig2) != HAL_OK)
+	 {
+		 /* Filter configuration Error */
+		 Error_Handler();
+	 }
+
 }
 
 void GAS_Can_init(void)
@@ -114,7 +139,7 @@ void GAS_Can_sendMessage()
 
 	//230108: add TX send message sending part
 	TxMailBox = HAL_CAN_GetTxMailboxesFreeLevel(&hcan);
-	HAL_CAN_AddTxMessage(&hcan, &canTxHeader1, &T_FanStatusData.TxData[0], &TxMailBox);
+	HAL_CAN_AddTxMessage(&hcan, &canTxHeader2, &T_FanStatusData.TxData[0], &TxMailBox);
 }
 
 
@@ -123,7 +148,17 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
 	if(hcan->Instance == CAN)
 	{
-		HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &canRxHeader, R_BatteryTemp.RxData);
+		uint8_t temp[8];
+
+		HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &canRxHeader, temp);
+		if(canRxHeader.ExtId == BMSID){//230108_2251 FIXME: Need change to BMS ID!!!!!
+			memcpy(R_BatteryTemp.RxData, temp, sizeof(uint8_t)*8);
+		}
+
+		HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO1, &canRxHeader2, temp);
+		if(canRxHeader2.ExtId == TC_order_ID){
+			memcpy(R_TC_order.RxData, temp, sizeof(uint8_t)*8);
+		}
 
 	}
 }

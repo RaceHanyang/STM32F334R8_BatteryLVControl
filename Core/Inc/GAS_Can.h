@@ -68,14 +68,27 @@ typedef union{
 		uint8_t TIM16_Frequency ;
 		uint8_t TIM17_Dutycycle ;
 		uint8_t TIM17_Frequency ;
-		uint8_t Reserved		;
+		uint8_t Remain			;
 	}__attribute__((aligned(1), packed)) B;
 
 }FanStatusData_t;
 
+//230108: TC order
+typedef union{
+	uint8_t RxData[8];
+	struct{
+		uint8_t TCControlMode	;
+		uint8_t TCFanDutyOrder  ;
+		uint16_t Remain2		;
+		uint32_t Remain3		;
+	}__attribute__((aligned(1), packed)) B;
+
+}TC_order_t;
+
 extern BatteryTemp_t R_BatteryTemp;
 extern BatteryDiagnose_t T_BatteryDiagnose;
 extern FanStatusData_t T_FanStatusData; //230108
+extern TC_order_t; //230108: BC-10 TC RX
 
 extern void GAS_Can_init(void);
 extern void GAS_Can_sendMessage();
