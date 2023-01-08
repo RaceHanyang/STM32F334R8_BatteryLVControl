@@ -94,5 +94,6 @@ extern TC_order_t R_TC_order; //230108: BC-10 TC RX
 extern void GAS_Can_init(void);
 extern void GAS_Can_sendMessage();
 extern void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan);
+extern void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan);//230108 added
 //extern void GAS_Can_recieveMessage(CAN_HandleTypeDef *hcan);
 #endif /* SRC_GETANDSEND_H_ */

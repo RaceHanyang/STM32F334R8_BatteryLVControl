@@ -37,6 +37,7 @@ void GAS_Can_rxSetting(void);
 void GAS_Can_init(void);
 void GAS_Can_sendMessage();
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan);
+void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan);//230108 added
 void HAL_CAN_ErrorCallback(CAN_HandleTypeDef* hcan);
 
 
@@ -110,6 +111,10 @@ void GAS_Can_init(void)
 	{
 	  Error_Handler();
 	}
+	//230108 added
+	if(HAL_CAN_ActivateNotification(&hcan, CAN_IT_RX_FIFO1_MSG_PENDING)!= HAL_OK){
+		Error_Handler();
+	}
 
 
 }
@@ -154,23 +159,24 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 		if(canRxHeader.ExtId == BMSID){//230108_2251 FIXME: Need change to BMS ID!!!!!
 			memcpy(R_BatteryTemp.RxData, temp, sizeof(uint8_t)*8);
 		}
+	}
+
+}
+
+void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
+{
+	if(hcan->Instance == CAN){
+		uint8_t temp[8];
 		//230108: get R_TC_order from VCU
 		HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO1, &canRxHeader2, temp);
 		if(canRxHeader2.ExtId == TC_order_ID){
 			memcpy(R_TC_order.RxData, temp, sizeof(uint16_t)*4);
-		}
+	}
 
 	}
+
 }
-//
-//void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
-//{
-//	if(hcan->Instance == CAN1)
-//	{
-//		HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO1, &canRxHeader, AMK_Setpoint2.RxData);
-//
-//	}
-//}
+
 
 //void GAS_Can_recieveMessage(CAN_HandleTypeDef *hcan)
 //{
