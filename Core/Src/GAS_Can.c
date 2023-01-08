@@ -157,7 +157,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 		//230108: get R_TC_order from VCU
 		HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO1, &canRxHeader2, temp);
 		if(canRxHeader2.ExtId == TC_order_ID){
-			memcpy(R_TC_order.RxData, temp, sizeof(uint8_t)*8);
+			memcpy(R_TC_order.RxData, temp, sizeof(uint16_t)*4);
 		}
 
 	}

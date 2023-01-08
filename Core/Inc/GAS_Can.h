@@ -77,14 +77,11 @@ typedef union{
 typedef union{
 	uint8_t RxData[8];
 	struct{
-		uint8_t TCControlMode	;
-		uint8_t TCFanDutyOrder  ;
-		uint8_t Remain1			;
-		uint8_t Remain2			;
-		uint8_t Remain3			;
-		uint8_t Remain4			;
-		uint8_t Remain5			;
-		uint8_t Remain6			;
+		uint16_t TCControlMode	;
+		uint16_t TCFanDutyOrder ;
+		uint16_t Remain1		;
+		uint16_t Remain2		;
+
 	}__attribute__((aligned(1), packed)) B;
 
 }TC_order_t;

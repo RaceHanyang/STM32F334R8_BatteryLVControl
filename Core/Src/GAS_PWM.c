@@ -90,14 +90,24 @@ void GAS_PWM_Fan_run()
 	 * read only 3 fan duties at a time
 	 */
 
-	uint16_t T = R_BatteryTemp.B.HighestTemp; //230104: FIXED(/10 deleted)
+	uint8_t T = R_BatteryTemp.B.HighestTemp; //230104: FIXED(/10 deleted)//230108: FIXED(uint16_t -> uint8_t)
 
+	//230108: TC ordermode update
+	uint16_t TCorder = R_TC_order.B.TCControlMode;
+	uint16_t per;
+	uint16_t fanPulse;
 
-	uint16_t per = T*4-60;
-	if (per<=20) per=20;					//230105: under 20 degree C, min duty
-	else if (per>=100) per = 100;			//230105: over 40 degree C, Max duty
+	if(TCorder == 1){
+		fanPulse = 287* (R_TC_order.B.TCFanDutyOrder/100);
+	}else{
+		per = T*4-60;
+		if (per<=20) per=20;					//230105: under 20 degree C, min duty
+		else if (per>=100) per = 100;			//230105: over 40 degree C, Max duty
 
-	uint16_t fanPulse = 287*(per/100); 		//230105: not duty... its pulse!!!! => name change(duty->fanPulse)
+		fanPulse = 287*(per/100); 		//230105: not duty... its pulse!!!! => name change(duty->fanPulse)
+
+	}
+
 
 	TIM1->CCR1=fanPulse;					//TIM1_CHANNEL1: fan control 3
 	TIM1->CCR2=fanPulse;					//TIM1_CHANNEL2: fan control 2
