@@ -21,8 +21,9 @@ typedef struct{
 	uint32_t Frequency;
 }pwmIn_t;
 
-extern pwmIn_t pwmIn1;
-extern pwmIn_t pwmIn2;
+extern pwmIn_t pwmIn15;
+extern pwmIn_t pwmIn16;
+extern pwmIn_t pwmIn17;
 
 extern volatile uint8_t pwmChangeFlag;
 

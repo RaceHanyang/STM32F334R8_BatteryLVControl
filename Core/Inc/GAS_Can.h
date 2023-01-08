@@ -45,9 +45,37 @@ typedef union{
 	}__attribute__((aligned(1),packed)) B;
 }BatteryDiagnose_t;
 
+/*
+ * 230108: Fan data TX message
+ * Fanflag = 1: tim15: 7
+ * 			 tim16: 4
+ * 			 tim17: 1
+ * Fanflag = 2: tim15: 8
+ * 			 tim16: 5
+ * 			 tim17: 2
+ * Fanflag = 3: tim15: 9
+ * 			 tim16: 6
+ * 			 tim17: 3
+ */
+typedef union{
+	uint8_t TxData[8];
+	uint8_t RxData[8];
+	struct{
+		uint8_t FanFlag			;
+		uint8_t TIM15_Dutycycle ;
+		uint8_t TIM15_Frequency ;
+		uint8_t TIM16_Dutycycle ;
+		uint8_t TIM16_Frequency ;
+		uint8_t TIM17_Dutycycle ;
+		uint8_t TIM17_Frequency ;
+		uint8_t Reserved		;
+	}__attribute__((aligned(1), packed)) B;
+
+}FanStatusData_t;
+
 extern BatteryTemp_t R_BatteryTemp;
 extern BatteryDiagnose_t T_BatteryDiagnose;
-//extern stm32_msg_t stm32_1;
+extern FanStatusData_t T_FanStatusData; //230108
 
 extern void GAS_Can_init(void);
 extern void GAS_Can_sendMessage();

@@ -18,9 +18,7 @@
 pwmIn_t pwmIn15;
 pwmIn_t pwmIn16;
 pwmIn_t pwmIn17;
-/*230108_0300: added for fan selection*/
-volatile uint8_t fanSelect0 = 0;
-volatile uint8_t fanSelect1 = 0;
+
 
 volatile uint8_t pwmChangeFlag; //230104: not used in this file//230108: use again
 
@@ -171,17 +169,4 @@ void GAS_PWM_Check(TIM_HandleTypeDef *htim, pwmIn_t *pwmIn){
 
 }
 
-void GAS_FanSelect(uint8_t S0, uint8_t S1){
 
-	uint8_t SS = S0+S1;
-
-	if(SS == 0){
-		pwmChangeFlag = 0;
-	}else if(SS == 2){
-		pwmChangeFlag = 1;
-	}else if(S1 > S0){
-		pwmChangeFlag = 2;
-	}else if(S1 < S0){
-		pwmChangeFlag = 3;
-	}
-}

@@ -6,6 +6,7 @@
  */
 
 #include <GAS_Can.h>
+#include <GAS_PWM.h>
 #include <stdio.h>
 
 CAN_FilterTypeDef sFilterConfig;
@@ -17,12 +18,12 @@ uint8_t canRx0Data[8];
 uint32_t TxMailBox;
 BatteryTemp_t R_BatteryTemp;
 BatteryDiagnose_t T_BatteryDiagnose;
-
+FanStatusData_t T_FanStatusData;//230108: added
 
 
 uint32_t BatteryInsideID = 0x405DB; //230104: need to be change to BMS temperature message id. Fix when BMS setted
-uint32_t BatteryFanCnt = 0x334C;	//221228_0338: THIS stm's CAN ID //testest///testtest
-
+uint32_t stm32BattInfoTX1 = 0x334C01;	//221228_0338: THIS stm's CAN ID //testest///testtest
+uint32_t stm32BattInfoTX2 = 0x334C02;	//230108_2100: Cooling fan duty cycles
 
 /*-------------------------Function Prototypes--------------------------------*/
 
@@ -37,10 +38,16 @@ void GAS_Can_txSetting(void)
 {
 
 //	  canTxHeader.StdId = (0x283>>18)&0x7ff;
-	  canTxHeader.ExtId = BatteryFanCnt;
+	  canTxHeader.ExtId = stm32BattInfoTX1;
 	  canTxHeader.IDE	= CAN_ID_EXT;
 	  canTxHeader.RTR	= CAN_RTR_DATA;
 	  canTxHeader.DLC	=	8;
+
+	  //canTxHeader.StdId = (0x283>>18)&0x7ff;
+	  canTxHeader1.ExtId = stm32BattInfoTX2;
+	  canTxHeader1.IDE	= CAN_ID_EXT;
+	  canTxHeader1.RTR	= CAN_RTR_DATA;
+	  canTxHeader1.DLC	=	8;
 
 }
 
@@ -93,9 +100,21 @@ void GAS_Can_sendMessage()
 	T_BatteryDiagnose.B.IMDStatusFrequency = HAL_GPIO_ReadPin(IMDStatusSignal_GPIO_Port,IMDStatusSignal_Pin);
 	T_BatteryDiagnose.B.Reserved			= 123;
 
+	//230108: add TX sending message: T_FanStatusData
+	T_FanStatusData.B.FanFlag = pwmChangeFlag;
+	T_FanStatusData.B.TIM15_Dutycycle = pwmIn15.DutyCycle;
+	T_FanStatusData.B.TIM15_Frequency = pwmIn15.Frequency;
+	T_FanStatusData.B.TIM16_Dutycycle = pwmIn16.DutyCycle;
+	T_FanStatusData.B.TIM16_Frequency = pwmIn16.Frequency;
+	T_FanStatusData.B.TIM17_Dutycycle = pwmIn17.DutyCycle;
+	T_FanStatusData.B.TIM17_Frequency = pwmIn17.Frequency;
+
 	TxMailBox = HAL_CAN_GetTxMailboxesFreeLevel(&hcan);
 	HAL_CAN_AddTxMessage(&hcan, &canTxHeader, &T_BatteryDiagnose.TxData[0], &TxMailBox);
 
+	//230108: add TX send message sending part
+	TxMailBox = HAL_CAN_GetTxMailboxesFreeLevel(&hcan);
+	HAL_CAN_AddTxMessage(&hcan, &canTxHeader1, &T_FanStatusData.TxData[0], &TxMailBox);
 }
 
 
