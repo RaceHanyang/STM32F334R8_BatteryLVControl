@@ -11,9 +11,14 @@
 #include "stm32f3xx_hal.h"
 #include "can.h"
 
+/*
+ * RX Data
+ * Receive data from: BMS
+ * RX ID: BMSID //FIXME BMSID
+ * Data: Temperature data from BMS
+ */
 
 typedef union{
-	uint8_t TxData[8];
 	uint8_t RxData[8];
 	struct{ //230104: unsinged int => uint8_t
 		uint8_t HighestTemp		;	//HighestTemp
@@ -21,16 +26,22 @@ typedef union{
 		uint8_t MeanTemp		; 	//Average
 		uint8_t HighestTempID	; 	//highestTemperature id
 		uint8_t LowestTempID	;	//LowestTemperature id
+		uint8_t reserved1		;
 		uint8_t reserved2		;
+		uint8_t reserved3		;
 
 	}__attribute__((aligned(1),packed)) B;
 
 }BatteryTemp_t;
 
-
+/*
+ * TX Data
+ * Transmit to: VCU
+ * TX ID: 0x334C01
+ * Data: Precharge state1&2, relaycontact signal 1&2&3, TSAL signal, IMD status
+ */
 typedef union{
 	uint8_t TxData[8];
-	uint8_t RxData[8];
 	struct{
 		uint8_t prechargeStateSignal1 ;
 		uint8_t prechargeStateSignal2 ;
@@ -45,8 +56,15 @@ typedef union{
 	}__attribute__((aligned(1),packed)) B;
 }BatteryDiagnose_t;
 
+
 /*
- * 230108: Fan data TX message
+ * TX Data
+ * Transmit to: VCU
+ * TX ID: 0x334C02
+ * Data: Fan Flag, TIM 15, 16, 17 Dutycycle & Frequency
+ *
+ ***Notation
+ * Ex) if fanflag == 1, send frequency&duty cycle of no.7,4,1 fans.
  * Fanflag = 1: tim15: 7
  * 			 tim16: 4
  * 			 tim17: 1
@@ -59,7 +77,6 @@ typedef union{
  */
 typedef union{
 	uint8_t TxData[8];
-	uint8_t RxData[8];
 	struct{
 		uint8_t FanFlag			;
 		uint8_t TIM15_Dutycycle ;
@@ -74,6 +91,12 @@ typedef union{
 }FanStatusData_t;
 
 //230108: TC order
+/*
+ * RX Data
+ * Receive from: VCU
+ * RX ID: 0x275B01
+ * Data: TCControl mode 0/1, TCFanDutyOrder 0~100(mostly 100)
+ */
 typedef union{
 	uint8_t RxData[8];
 	struct{
