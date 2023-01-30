@@ -22,10 +22,10 @@ typedef union{
 	uint8_t RxData[8];
 	struct{ //230104: unsinged int => uint8_t
 		uint8_t HighestTemp		;	//HighestTemp
-		uint8_t LowestTemp		;	//LowestTemp
+		uint8_t HighestTempID	;	//LowestTemp
 		uint8_t MeanTemp		; 	//Average
-		uint8_t HighestTempID	; 	//highestTemperature id
-		uint8_t LowestTempID	;	//LowestTemperature id
+		uint8_t InternalTemp	; 	//Heatsink Temperature
+		uint8_t LowcellVoltage	;	//not used in this code
 		uint8_t reserved1		;
 		uint8_t reserved2		;
 		uint8_t reserved3		;

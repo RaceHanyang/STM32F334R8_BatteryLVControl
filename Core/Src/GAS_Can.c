@@ -24,7 +24,7 @@ BatteryDiagnose_t T_BatteryDiagnose;
 FanStatusData_t T_FanStatusData;//230108: added
 TC_order_t R_TC_order;
 
-uint32_t BMSID = 0x405DB; //230104: need to be change to BMS temperature message id. Fix when BMS setted
+uint32_t BMSID = 0x1F02; //230130: BMSID fixed
 uint32_t stm32BattInfoTX1 = 0x334C01;	//221228_0338: THIS stm's CAN ID //testest///testtest
 uint32_t stm32BattInfoTX2 = 0x334C02;	//230108_2100: Cooling fan duty cycles
 
