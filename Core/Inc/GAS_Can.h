@@ -1,8 +1,12 @@
 /*
- * CAN.h
+ * GAS_Can.h
  *
  *  Created on: 2020. 10. 27.
- *      Author: Suprhimp
+ *  Modified on: 2023.01.31.
+ *      First Author: Suprhimp
+ *      Second Author: legolas089
+ *
+ *  **comments of this file needs to be added
  */
 
 #ifndef SRC_GETANDSEND_H_
@@ -100,7 +104,7 @@ typedef union{
 typedef union{
 	uint8_t RxData[8];
 	struct{
-		uint16_t TCControlMode	;
+		uint16_t TCControlMode	; //0: not TC control mode, 1: TC Control mode
 		uint16_t TCFanDutyOrder ;
 		uint16_t Remain1		;
 		uint16_t Remain2		;
@@ -116,7 +120,7 @@ extern TC_order_t R_TC_order; //230108: BC-10 TC RX
 
 extern void GAS_Can_init(void);
 extern void GAS_Can_sendMessage();
-extern void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan);
+extern void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan);
 extern void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan);//230108 added
 //extern void GAS_Can_recieveMessage(CAN_HandleTypeDef *hcan);
 #endif /* SRC_GETANDSEND_H_ */

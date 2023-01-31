@@ -26,7 +26,7 @@ TC_order_t R_TC_order;
 
 uint32_t BMSID = 0x1F02; //230130: BMSID fixed
 uint32_t stm32BattInfoTX1 = 0x334C01;	//221228_0338: THIS stm's CAN ID //testest///testtest
-uint32_t stm32BattInfoTX2 = 0x334C02;	//230108_2100: Cooling fan duty cycles
+uint32_t stm32BattFanInfoTX2 = 0x334C02;	//230108_2100: Cooling fan duty cycles
 
 uint32_t TC_order_ID = 0x275B01;
 
@@ -51,7 +51,7 @@ void GAS_Can_txSetting(void)
 	  canTxHeader.DLC	=	8;
 
 	  //canTxHeader.StdId = (0x283>>18)&0x7ff;
-	  canTxHeader2.ExtId = stm32BattInfoTX2;
+	  canTxHeader2.ExtId = stm32BattFanInfoTX2;
 	  canTxHeader2.IDE	= CAN_ID_EXT;
 	  canTxHeader2.RTR	= CAN_RTR_DATA;
 	  canTxHeader2.DLC	=	8;
@@ -156,7 +156,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 		uint8_t temp[8];
 		//230108: get R_BatteryTemp from BMS
 		HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &canRxHeader, temp);
-		if(canRxHeader.ExtId == BMSID){//230108_2251 FIXME: Need change to BMS ID!!!!!
+		if(canRxHeader.ExtId == BMSID){
 			memcpy(R_BatteryTemp.RxData, temp, sizeof(uint8_t)*8);
 		}
 	}
