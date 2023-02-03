@@ -27,7 +27,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "GAS_Scheduler.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -52,6 +52,7 @@
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+static void MX_NVIC_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -98,8 +99,12 @@ int main(void)
   MX_TIM16_Init();
   MX_DMA_Init();
   MX_TIM17_Init();
+
+  /* Initialize interrupts */
+  MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
   GAS_Scheduler_init();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -158,6 +163,20 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief NVIC Configuration.
+  * @retval None
+  */
+static void MX_NVIC_Init(void)
+{
+  /* CAN_RX0_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(CAN_RX0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(CAN_RX0_IRQn);
+  /* CAN_RX1_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(CAN_RX1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(CAN_RX1_IRQn);
 }
 
 /* USER CODE BEGIN 4 */

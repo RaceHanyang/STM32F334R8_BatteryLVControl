@@ -65,7 +65,7 @@ void GAS_Can_rxSetting(void){
 	sFilterConfig.FilterMaskIdHigh = (0x0ffffff0<<3)>>16;
 	sFilterConfig.FilterMaskIdLow =(0xffff & (0x0FFFFFF0 << 3)) | (1<<2);
 	sFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0;
-	sFilterConfig.FilterBank = 0;
+	sFilterConfig.FilterBank = 2;
 	sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
 	sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
 	sFilterConfig.FilterActivation = ENABLE;
@@ -85,7 +85,7 @@ void GAS_Can_rxSetting(void){
 	 sFilterConfig2.FilterMaskIdHigh = (0x0fffffff<<3)>>16;
 	 sFilterConfig2.FilterMaskIdLow =(0xffff & (0x0FFFFFFF << 3)) | (1<<2);
 	 sFilterConfig2.FilterFIFOAssignment = CAN_RX_FIFO1;
-	 sFilterConfig2.FilterBank = 15;   /* YOU MUST USE FILTERBANK over 14 if YOU USE CAN2!!!!!!!!!!!!!!! */
+	 sFilterConfig2.FilterBank = 2;   /* YOU MUST USE FILTERBANK over 14 if YOU USE CAN2!!!!!!!!!!!!!!! */
 	 sFilterConfig2.FilterMode = CAN_FILTERMODE_IDMASK;
 	 sFilterConfig2.FilterScale = CAN_FILTERSCALE_32BIT;
 	 sFilterConfig2.FilterActivation = ENABLE;
@@ -103,7 +103,7 @@ void GAS_Can_init(void)
 
 	GAS_Can_txSetting();
 	GAS_Can_rxSetting();
-//
+
 
 	HAL_CAN_Start(&hcan);
 
@@ -111,11 +111,12 @@ void GAS_Can_init(void)
 	{
 	  Error_Handler();
 	}
-	//230108 added
+	//230108 added ///
+	/*
 	if(HAL_CAN_ActivateNotification(&hcan, CAN_IT_RX_FIFO1_MSG_PENDING)!= HAL_OK){
 		Error_Handler();
 	}
-
+*/
 
 }
 
