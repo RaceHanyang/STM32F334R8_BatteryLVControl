@@ -17,7 +17,7 @@ CAN_RxHeaderTypeDef canRxHeader2;
 CAN_TxHeaderTypeDef canTxHeader;
 CAN_TxHeaderTypeDef canTxHeader2;
 
-uint8_t canRx0Data[8];
+//uint8_t canRx0Data[8];
 uint32_t TxMailBox;
 BatteryTemp_t R_BatteryTemp;
 BatteryDiagnose_t T_BatteryDiagnose;
@@ -61,15 +61,15 @@ void GAS_Can_txSetting(void)
 void GAS_Can_rxSetting(void){
 
 	sFilterConfig.FilterIdHigh = (BMSID<<3)>>16;				/*first 2byte in 29bit (shift need to IED,RTR,0)*/
-	sFilterConfig.FilterIdLow = (0xffff & (BMSID << 3)) | (1<<2);	/*second 2byte in 29bit + IDE (shift need to IED,RTR,0/)*/
-	sFilterConfig.FilterMaskIdHigh = (0x0ffffff0<<3)>>16;
-	sFilterConfig.FilterMaskIdLow =(0xffff & (0x0FFFFFF0 << 3)) | (1<<2);
+	sFilterConfig.FilterIdLow =(0xffff & (BMSID << 3)) | (1<<2);	/*second 2byte in 29bit + IDE (shift need to IED,RTR,0/)*/
+	sFilterConfig.FilterMaskIdHigh = (BMSID<<3)>>16;
+	sFilterConfig.FilterMaskIdLow = (0xffff & (BMSID << 3)) | (1<<2);
 	sFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0;
-	sFilterConfig.FilterBank = 2;
+	sFilterConfig.FilterBank = 5;
 	sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
 	sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
 	sFilterConfig.FilterActivation = ENABLE;
-	sFilterConfig.SlaveStartFilterBank = 0;
+	sFilterConfig.SlaveStartFilterBank = 15;
 
 
 	 if (HAL_CAN_ConfigFilter(&hcan, &sFilterConfig) != HAL_OK)
@@ -157,8 +157,8 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 		uint8_t temp[8];
 		//230108: get R_BatteryTemp from BMS
 		HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &canRxHeader, temp);
-		if(canRxHeader.ExtId == BMSID){
-			memcpy(R_BatteryTemp.RxData, temp, sizeof(uint8_t)*8);
+		if(canRxHeader.ExtId == BMSID){ //230203 ExtID -> stdID
+			memcpy(R_BatteryTemp.RxData, temp, sizeof(uint8_t)*8);///
 		}
 	}
 

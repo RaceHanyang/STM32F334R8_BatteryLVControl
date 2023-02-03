@@ -20,8 +20,9 @@ pwmIn_t pwmIn16;
 pwmIn_t pwmIn17;
 
 uint16_t per;
-uint32_t fanPulse;
+uint16_t fanPulse;
 float floatFanPulse;
+uint8_t BMSTemp;
 
 volatile uint8_t pwmChangeFlag; //230104: not used in this file//230108: use again
 
@@ -93,24 +94,30 @@ void GAS_PWM_Fan_run()
 	 */
 
 
-	uint8_t T = R_BatteryTemp.B.HighestTemp; //230104: FIXED(/10 deleted)//230108: FIXED(uint16_t -> uint8_t)
+	BMSTemp = R_BatteryTemp.B.HighestTemp; //230104: FIXED(/10 deleted)//230108: FIXED(uint16_t -> uint8_t)
 
 	//230108: TC ordermode update
 	uint16_t TCorder = 0;//R_TC_order.B.TCControlMode;
 
 	if(TCorder == 1){
-		fanPulse = 287*(R_TC_order.B.TCFanDutyOrder/100);
-	}
-	else{
-		per = T*4-60;
+		fanPulse = 287*((float)(R_TC_order.B.TCFanDutyOrder/100));
+	}else{
+		per = BMSTemp*4-60;
 		if (per<=20) per=20;					//230105: under 20 degree C, min duty
 		else if (per>=100) per = 100;			//230105: over 40 degree C, Max duty
-		floatFanPulse = 60/100.0;//per->60
-		fanPulse = 287.0*floatFanPulse; 		//**//230105: not duty... its pulse!!!! => name change(duty->fanPulse)
+		floatFanPulse = per/100.0;				//per->60
+		fanPulse = 287.0*floatFanPulse; 		//230105: not duty... its pulse!!!! => name change(duty->fanPulse)
 
 	}
 
-	fanPulse = 140;
+	/*
+	per = BMSTemp*4-60;
+	if (per<=20) per=20;					//230105: under 20 degree C, min duty
+	else if (per>=100) per = 100;			//230105: over 40 degree C, Max duty
+	floatFanPulse = per/100.0;				//per->60
+	fanPulse = 287.0*floatFanPulse; 		//230105: not duty... its pulse!!!! => name change(duty->fanPulse)
+*/
+	//fanPulse = 140;
 
 	htim1.Instance -> CCR1 = fanPulse;
 	htim1.Instance -> CCR2 = fanPulse;
