@@ -19,10 +19,16 @@ pwmIn_t pwmIn15;
 pwmIn_t pwmIn16;
 pwmIn_t pwmIn17;
 
-uint16_t per;
+uint8_t per;
 uint16_t fanPulse;
 float floatFanPulse;
+float floatFanPulse_100;
 uint8_t BMSTemp;
+
+uint16_t sideIntake;
+uint16_t segmentIntake70;
+uint16_t segmentExhaust60;
+uint16_t segmentExhaust80;
 
 volatile uint8_t pwmChangeFlag; //230104: not used in this file//230108: use again
 
@@ -100,69 +106,60 @@ void GAS_PWM_Fan_run()
 	uint16_t TCorder = 0;//R_TC_order.B.TCControlMode;
 
 	if(TCorder == 1){
-		fanPulse = 287*((float)(R_TC_order.B.TCFanDutyOrder/100));
+		per = R_TC_order.B.TCFanDutyOrder_Temp;
+		floatFanPulse_100 = R_TC_order.B.TCFanDutyOrder_100/100.0;
+		floatFanPulse = R_TC_order.B.TCFanDutyOrder_Temp/100.0;
+		sideIntake = 287.0*floatFanPulse_100;
+		segmentIntake70 = 287.0*floatFanPulse;	//6ea
+		segmentExhaust60 = 287.0*floatFanPulse_100; //3ea
+		segmentExhaust80 = 287.0*floatFanPulse; //3ea
+
+//		fanPulse = 287*((float)(R_TC_order.B.TCFanDutyOrder/100));
+
 	}else{
 		per = BMSTemp*4-60;
 		if (per<=20) per=20;					//230105: under 20 degree C, min duty
 		else if (per>=100) per = 100;			//230105: over 40 degree C, Max duty
-		floatFanPulse = per/100.0;				//per->60
-		fanPulse = 287.0*floatFanPulse; 		//230105: not duty... its pulse!!!! => name change(duty->fanPulse)
 
+		floatFanPulse = per/100.0;				//per->60
+		floatFanPulse_100 = 1.0; 		//230105: not duty... its pulse!!!! => name change(duty->fanPulse)
+
+		sideIntake = 287.0*floatFanPulse_100;		//2ea
+		segmentExhaust60 = 287.0*floatFanPulse_100; //3ea
+
+		segmentIntake70 = 287.0*floatFanPulse;	//6ea
+		segmentExhaust80 = 287.0*floatFanPulse; //3ea
 	}
 
-	/*
-	per = BMSTemp*4-60;
-	if (per<=20) per=20;					//230105: under 20 degree C, min duty
-	else if (per>=100) per = 100;			//230105: over 40 degree C, Max duty
-	floatFanPulse = per/100.0;				//per->60
-	fanPulse = 287.0*floatFanPulse; 		//230105: not duty... its pulse!!!! => name change(duty->fanPulse)
-*/
-	//fanPulse = 140;
+	//230204: TODO: set to hardware
+	htim1.Instance -> CCR1 = sideIntake; 		//parallel
+	htim1.Instance -> CCR2 = segmentIntake70;	//parallel
+	htim1.Instance -> CCR3 = segmentIntake70;
 
-	htim1.Instance -> CCR1 = fanPulse;
-	htim1.Instance -> CCR2 = fanPulse;
+	htim2.Instance -> CCR1 = segmentIntake70;
+	htim2.Instance -> CCR2 = segmentExhaust60;
+	htim2.Instance -> CCR3 = segmentExhaust60;
+
+	htim3.Instance -> CCR1 = segmentExhaust60;
+	htim3.Instance -> CCR2 = segmentExhaust80;
+	htim3.Instance -> CCR3 = segmentExhaust80;
+
+
+	/*testmode*/
+	/*
+	fanPulse = 287.0;
+	htim1.Instance -> CCR1 = fanPulse; 		//parallel
+	htim1.Instance -> CCR2 = fanPulse;	//parallel
 	htim1.Instance -> CCR3 = fanPulse;
-	//HAL_TIM_GenerateEvent(&htim1, TIM_EventSource_Update);
-	//HAL_Delay(1);
+
 	htim2.Instance -> CCR1 = fanPulse;
 	htim2.Instance -> CCR2 = fanPulse;
 	htim2.Instance -> CCR3 = fanPulse;
-	//HAL_TIM_GenerateEvent(&htim2, TIM_EventSource_Update);
-	//HAL_Delay(1);
+
 	htim3.Instance -> CCR1 = fanPulse;
 	htim3.Instance -> CCR2 = fanPulse;
 	htim3.Instance -> CCR3 = fanPulse;
-	//HAL_TIM_GenerateEvent(&htim3, TIM_EventSource_Update);
-	//HAL_Delay(1);
-
-/*
-	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, fanPulse);
-	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, fanPulse);
-	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, fanPulse);
-	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, fanPulse);
-	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, fanPulse);
-	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, fanPulse);
-	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, fanPulse);
-	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, fanPulse);
-	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, fanPulse);
 */
-
-/*
-	TIM1->CCR1=fanPulse;					//TIM1_CHANNEL1: fan control 3
-	TIM1->CCR2=fanPulse;					//TIM1_CHANNEL2: fan control 2
-	TIM1->CCR3=fanPulse;					//TIM1_CHANNEL3: fan control 1
-
-	TIM2->CCR1=fanPulse;					//TIM1_CHANNEL1: fan control 4
-	TIM2->CCR2=fanPulse;					//TIM1_CHANNEL2: fan control 5
-	TIM2->CCR3=fanPulse;					//TIM1_CHANNEL3: fan control 6
-
-	TIM3->CCR1=fanPulse;					//TIM1_CHANNEL1: fan control 7
-	TIM3->CCR2=fanPulse;					//TIM1_CHANNEL2: fan control 8
-
-	TIM3->CCR3=fanPulse;
-	 				//230105: why not existed???: fan control 9
-*/
-
 	/*
 	 * PWM input: select fan and calculate duty: 230108
 	 */

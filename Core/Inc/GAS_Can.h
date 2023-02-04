@@ -90,7 +90,7 @@ typedef union{
 		uint8_t TIM16_Frequency ;
 		uint8_t TIM17_Dutycycle ;
 		uint8_t TIM17_Frequency ;
-		uint8_t Remain			;
+		uint8_t desiredDuty			;
 	}__attribute__((aligned(1), packed)) B;
 
 }FanStatusData_t;
@@ -105,19 +105,46 @@ typedef union{
 typedef union{
 	uint8_t RxData[8];
 	struct{
-		uint16_t TCControlMode	; //0: not TC control mode, 1: TC Control mode
-		uint16_t TCFanDutyOrder ;
-		uint16_t Remain1		;
-		uint16_t Remain2		;
+		uint8_t TCControlMode	; //0: not TC control mode, 1: TC Control mode
+		uint8_t TCFanDutyOrder_100 ;
+		uint8_t TCFanDutyOrder_Temp	;
+		uint8_t Remain2		;
+		uint8_t Remain3		;
+		uint8_t Remain4		;
+		uint8_t Remain5		;
+		uint8_t Remain6		;
+
+	}__attribute__((aligned(1), packed)) B;
+
+}TC_order_r;
+
+typedef union{
+	uint8_t TxData[8];
+	struct{
+		uint8_t TCControlModeEcho ; //0: not TC control mode, 1: TC Control mode
+		uint8_t TCFanDutyOrderEcho_100 ;
+		uint8_t TCFanDutyOrderEcho_Temp	;
+		uint8_t nowDesiredDuty_100		;
+		uint8_t nowDesiredDuty		;
+		uint8_t Remain4		;
+		uint8_t Remain5		;
+		uint8_t Remain6		;
 
 	}__attribute__((aligned(1), packed)) B;
 
 }TC_order_t;
 
+
+
+
+
+
 extern BatteryTemp_t R_BatteryTemp;
 extern BatteryDiagnose_t T_BatteryDiagnose;
 extern FanStatusData_t T_FanStatusData; //230108
-extern TC_order_t R_TC_order; //230108: BC-10 TC RX
+extern TC_order_r R_TC_order; //230108: BC-10 TC RX
+extern TC_order_t T_TC_order; //230204: echo TC order
+extern uint8_t per; //230204
 
 extern void GAS_Can_init(void);
 extern void GAS_Can_sendMessage();

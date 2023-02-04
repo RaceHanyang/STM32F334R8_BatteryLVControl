@@ -13,12 +13,12 @@
 #include "GAS_Can.h"
 
 typedef struct{
-	uint32_t RisingEdgeValue;
-	uint32_t FallingEdgeValue;
-	uint32_t Period;
-	uint32_t Width;
-	uint32_t DutyCycle;
-	uint32_t Frequency;
+	uint16_t RisingEdgeValue;
+	uint16_t FallingEdgeValue;
+	uint8_t Period;
+	uint8_t Width;
+	uint8_t DutyCycle;
+	uint8_t Frequency;
 }pwmIn_t;
 
 extern pwmIn_t pwmIn15;
@@ -26,9 +26,12 @@ extern pwmIn_t pwmIn16;
 extern pwmIn_t pwmIn17;
 
 extern volatile uint8_t pwmChangeFlag;
-
 extern volatile uint8_t fanSelect0;//230108
 extern volatile uint8_t fanSelect1;//230108
+
+
+extern float floatFanPulse;
+extern float floatFanPulse_100;
 
 extern void GAS_PWM_inputInit(void);
 extern void GAS_PWM_outputInit(void);
