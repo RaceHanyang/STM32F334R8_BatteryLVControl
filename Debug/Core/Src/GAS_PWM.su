@@ -1,5 +1,0 @@
-..\Core\Src\GAS_PWM.c:41:6:GAS_PWM_inputInit	8	static
-..\Core\Src\GAS_PWM.c:51:6:GAS_PWM_outputInit	8	static
-..\Core\Src\GAS_PWM.c:69:6:HAL_TIM_IC_CaptureCallback	16	static
-..\Core\Src\GAS_PWM.c:92:6:GAS_PWM_Fan_run	16	static
-..\Core\Src\GAS_PWM.c:202:6:GAS_PWM_Check	24	static
