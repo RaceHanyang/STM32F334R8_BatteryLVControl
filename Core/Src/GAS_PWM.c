@@ -21,8 +21,10 @@ pwmIn_t pwmIn17;
 
 uint8_t per;
 uint16_t fanPulse;
-float floatFanPulse;
-float floatFanPulse_100;
+float FanPulse_SegmentIntake70;
+float FanPulse_SideIntake;
+float FanPulse_SegmentExhaust60;
+float FanPulse_SegmentExhaust80;
 uint8_t BMSTemp;
 
 uint16_t sideIntake;
@@ -103,32 +105,41 @@ void GAS_PWM_Fan_run()
 	BMSTemp = R_BatteryTemp.B.HighestTemp; //230104: FIXED(/10 deleted)//230108: FIXED(uint16_t -> uint8_t)
 
 	//230108: TC ordermode update
-	uint16_t TCorder = 0;//R_TC_order.B.TCControlMode;
+	//uint16_t TCorder = 0;//R_TC_order.B.TCControlMode;
 
-	if(TCorder == 1){
-		per = R_TC_order.B.TCFanDutyOrder_Temp;
-		floatFanPulse_100 = R_TC_order.B.TCFanDutyOrder_100/100.0;
-		floatFanPulse = R_TC_order.B.TCFanDutyOrder_Temp/100.0;
-		sideIntake = 287.0*floatFanPulse_100;
-		segmentIntake70 = 287.0*floatFanPulse;	//6ea
-		segmentExhaust60 = 287.0*floatFanPulse_100; //3ea
-		segmentExhaust80 = 287.0*floatFanPulse; //3ea
+	if(R_TC_order.B.TCControlMode == 1){
+		per = R_TC_order.B.TCFanDutyOrder_SegmentIntake70;
+
+		FanPulse_SideIntake = R_TC_order.B.TCFanDutyOrder_SideIntake/100.0;
+		FanPulse_SegmentIntake70 = R_TC_order.B.TCFanDutyOrder_SegmentIntake70/100.0;
+		FanPulse_SegmentExhaust60 = R_TC_order.B.TCFanDutyOrder_SegmentExhaust60/100.0;
+		FanPulse_SegmentExhaust80 = R_TC_order.B.TCFanDutyOrder_SegmentExhaust80/100.0;
+
+		sideIntake = 287.0*FanPulse_SideIntake;
+		segmentIntake70 = 287.0*FanPulse_SegmentIntake70;	//6ea
+		segmentExhaust60 = 287.0*FanPulse_SideIntake; //3ea
+		segmentExhaust80 = 287.0*FanPulse_SegmentExhaust80; //3ea
 
 //		fanPulse = 287*((float)(R_TC_order.B.TCFanDutyOrder/100));
 
 	}else{
 		per = BMSTemp*4-60;
-		if (per<=20) per=20;					//230105: under 20 degree C, min duty
-		else if (per>=100) per = 100;			//230105: over 40 degree C, Max duty
+		if (per<=20) {
+			per=20;					//230105: under 20 degree C, min duty
+		}
+		else if (per>=100) {
+			per = 100;			//230105: over 40 degree C, Max duty
+		}
 
-		floatFanPulse = per/100.0;				//per->60
-		floatFanPulse_100 = 1.0; 		//230105: not duty... its pulse!!!! => name change(duty->fanPulse)
+		FanPulse_SideIntake = 1.0;
+		FanPulse_SegmentIntake70 = per/100.0;
+		FanPulse_SegmentExhaust60 = 1.0;
+		FanPulse_SegmentExhaust80 = per/100.0;
 
-		sideIntake = 287.0*floatFanPulse_100;		//2ea
-		segmentExhaust60 = 287.0*floatFanPulse_100; //3ea
-
-		segmentIntake70 = 287.0*floatFanPulse;	//6ea
-		segmentExhaust80 = 287.0*floatFanPulse; //3ea
+		sideIntake = 287.0*FanPulse_SideIntake;
+		segmentIntake70 = 287.0*FanPulse_SegmentIntake70;	//6ea
+		segmentExhaust60 = 287.0*FanPulse_SideIntake; //3ea
+		segmentExhaust80 = 287.0*FanPulse_SegmentExhaust80; //3ea
 	}
 
 	//230204: TODO: set to hardware

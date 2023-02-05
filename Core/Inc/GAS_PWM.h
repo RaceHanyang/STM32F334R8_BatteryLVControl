@@ -30,8 +30,10 @@ extern volatile uint8_t fanSelect0;//230108
 extern volatile uint8_t fanSelect1;//230108
 
 
-extern float floatFanPulse;
-extern float floatFanPulse_100;
+extern float FanPulse_SegmentIntake70;
+extern float FanPulse_SideIntake;
+extern float FanPulse_SegmentExhaust60;
+extern float FanPulse_SegmentExhaust80;
 
 extern void GAS_PWM_inputInit(void);
 extern void GAS_PWM_outputInit(void);

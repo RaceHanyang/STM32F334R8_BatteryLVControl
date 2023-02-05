@@ -17,22 +17,27 @@ CAN_RxHeaderTypeDef canRxHeader2;
 CAN_TxHeaderTypeDef canTxHeader;
 CAN_TxHeaderTypeDef canTxHeader2;
 CAN_TxHeaderTypeDef canTxHeader3;
+CAN_TxHeaderTypeDef canTxHeader4;
 
 //uint8_t canRx0Data[8];
 uint32_t TxMailBox;
 BatteryTemp_t R_BatteryTemp;
 BatteryDiagnose_t T_BatteryDiagnose;
 FanStatusData_t T_FanStatusData;//230108: added
-TC_order_r R_TC_order;
-TC_order_t T_TC_order; //TC order ECHO
+TC_order_t R_TC_order;
+//TC_orderEcho_t T_TC_order; //TC order ECHO
+TC_order_t T_TC_orderEcho;
+FanTargetDuty_t T_FanTargetDuty;
+
 
 uint32_t BMSID = 0x1F02; //230130: BMSID fixed
-uint32_t stm32BattInfoTX1 = 0x334C01;	//221228_0338: THIS stm's CAN ID //testest///testtest
-uint32_t stm32BattFanInfoTX2 = 0x334C02;	//230108_2100: Cooling fan duty cycles
+
+uint32_t BatteryDiagnose_ID = 0x334C01;	//221228_0338: THIS stm's CAN ID //testest///testtest
+uint32_t FanStatusData_ID = 0x334C02;	//230108_2100: Cooling fan duty cycles
+uint32_t TC_orderEcho_ID = 0x334C03;
+uint32_t FanTargetDuty_ID = 0x334C04;
 
 uint32_t TC_order_ID = 0x275B01;
-uint32_t stm32BattTCEcho = 0x334C03;
-
 /*-------------------------Function Prototypes--------------------------------*/
 
 void GAS_Can_rxSetting(void);
@@ -47,22 +52,27 @@ void GAS_Can_txSetting(void)
 {
 
 //	  canTxHeader.StdId = (0x283>>18)&0x7ff;
-	  canTxHeader.ExtId = stm32BattInfoTX1;
+	  canTxHeader.ExtId = BatteryDiagnose_ID;
 	  canTxHeader.IDE	= CAN_ID_EXT;
 	  canTxHeader.RTR	= CAN_RTR_DATA;
 	  canTxHeader.DLC	=	8;
 
 	  //canTxHeader.StdId = (0x283>>18)&0x7ff;
-	  canTxHeader2.ExtId = stm32BattFanInfoTX2;
+	  canTxHeader2.ExtId = FanStatusData_ID;
 	  canTxHeader2.IDE	= CAN_ID_EXT;
 	  canTxHeader2.RTR	= CAN_RTR_DATA;
 	  canTxHeader2.DLC	=	8;
 
 	  //canTxHeader.StdId = (0x283>>18)&0x7ff;
-	  canTxHeader3.ExtId = stm32BattTCEcho;
+	  canTxHeader3.ExtId = TC_orderEcho_ID;
 	  canTxHeader3.IDE	= CAN_ID_EXT;
 	  canTxHeader3.RTR	= CAN_RTR_DATA;
 	  canTxHeader3.DLC	=	8;
+
+	  canTxHeader4.ExtId = FanTargetDuty_ID;
+	  canTxHeader4.IDE	= CAN_ID_EXT;
+	  canTxHeader4.RTR	= CAN_RTR_DATA;
+	  canTxHeader4.DLC	=	8;
 
 }
 
@@ -149,16 +159,24 @@ void GAS_Can_sendMessage()
 	T_FanStatusData.B.TIM17_Dutycycle = pwmIn17.DutyCycle;
 	T_FanStatusData.B.TIM17_Frequency = pwmIn17.Frequency;
 	T_FanStatusData.B.desiredDuty	  = per;
-
+/*
 	//230204: TC Echo TX message
 	T_TC_order.B.TCControlModeEcho = R_TC_order.B.TCControlMode;
-	T_TC_order.B.TCFanDutyOrderEcho_100 = R_TC_order.B.TCFanDutyOrder_100;
-	T_TC_order.B.TCFanDutyOrderEcho_Temp = R_TC_order.B.TCFanDutyOrder_Temp;
+	T_TC_order.B.TCFanDutyOrderEcho_100 = R_TC_order.B.TCFanDutyOrder_SideIntake;
+	T_TC_order.B.TCFanDutyOrderEcho_Temp = R_TC_order.B.TCFanDutyOrder_SegmentIntake70;
 	T_TC_order.B.nowDesiredDuty_100 = (uint8_t)floatFanPulse_100;
 	T_TC_order.B.nowDesiredDuty = (uint8_t)floatFanPulse;
 	T_TC_order.B.Remain4 = 0;
 	T_TC_order.B.Remain5 = 0;
 	T_TC_order.B.Remain6 = 0;
+*/
+	T_TC_orderEcho = R_TC_order;
+
+	T_FanTargetDuty.TargetDuty_SideIntake = FanPulse_SideIntake * 100;
+	T_FanTargetDuty.TargetDuty_SegmentIntake70 = FanPulse_SegmentIntake70 * 100;
+	T_FanTargetDuty.TargetDuty_SegmentExhaust60 = FanPulse_SegmentExhaust60 * 100;
+	T_FanTargetDuty.TargetDuty_SegmentExhaust80 = FanPulse_SegmentExhaust80 * 100;
+
 
 	TxMailBox = HAL_CAN_GetTxMailboxesFreeLevel(&hcan);
 	HAL_CAN_AddTxMessage(&hcan, &canTxHeader, &T_BatteryDiagnose.TxData[0], &TxMailBox);
@@ -169,8 +187,10 @@ void GAS_Can_sendMessage()
 
 	//230204: TC order ECHO
 	TxMailBox = HAL_CAN_GetTxMailboxesFreeLevel(&hcan);
-	HAL_CAN_AddTxMessage(&hcan, &canTxHeader3, &T_TC_order.TxData[0], &TxMailBox);
+	HAL_CAN_AddTxMessage(&hcan, &canTxHeader3, &T_TC_orderEcho.TxData[0], &TxMailBox);
 
+	TxMailBox = HAL_CAN_GetTxMailboxesFreeLevel(&hcan);
+	HAL_CAN_AddTxMessage(&hcan, &canTxHeader4, &T_FanTargetDuty.TxData[0], &TxMailBox);
 }
 
 

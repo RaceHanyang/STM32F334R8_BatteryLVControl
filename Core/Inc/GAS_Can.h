@@ -100,41 +100,56 @@ typedef union{
  * RX Data
  * Receive from: VCU
  * RX ID: 0x275B01
- * Data: TCControl mode 0/1, TCFanDutyOrder 0~100(mostly 100)
+ * Data: TCControl mode 0/1, one TCFanDutyOrder for each of 4 segments, in range of 0~100.
  */
 typedef union{
-	uint8_t RxData[8];
+	union{
+		uint8_t RxData[8];
+		uint8_t TxData[8];
+	};
 	struct{
 		uint8_t TCControlMode	; //0: not TC control mode, 1: TC Control mode
-		uint8_t TCFanDutyOrder_100 ;
-		uint8_t TCFanDutyOrder_Temp	;
+		uint8_t TCFanDutyOrder_SideIntake ;
+		uint8_t TCFanDutyOrder_SegmentIntake70;
+		uint8_t TCFanDutyOrder_SegmentExhaust60;
+		uint8_t TCFanDutyOrder_SegmentExhaust80;
+		uint8_t Remain1		;
 		uint8_t Remain2		;
 		uint8_t Remain3		;
-		uint8_t Remain4		;
-		uint8_t Remain5		;
-		uint8_t Remain6		;
-
-	}__attribute__((aligned(1), packed)) B;
-
-}TC_order_r;
-
-typedef union{
-	uint8_t TxData[8];
-	struct{
-		uint8_t TCControlModeEcho ; //0: not TC control mode, 1: TC Control mode
-		uint8_t TCFanDutyOrderEcho_100 ;
-		uint8_t TCFanDutyOrderEcho_Temp	;
-		uint8_t nowDesiredDuty_100		;
-		uint8_t nowDesiredDuty		;
-		uint8_t Remain4		;
-		uint8_t Remain5		;
-		uint8_t Remain6		;
 
 	}__attribute__((aligned(1), packed)) B;
 
 }TC_order_t;
+/*
+typedef union{
+	uint8_t TxData[8];
+	struct{
+		uint8_t TCControlModeEcho ; //0: not TC control mode, 1: TC Control mode
+		uint8_t TCFanDutyOrder_SideIntake ;
+		uint8_t TCFanDutyOrder_SegmentIntake70;
+		uint8_t TCFanDutyOrder_SegmentExhaust60;
+		uint8_t TCFanDutyOrder_SegmentExhaust80;
+		uint8_t Remain1		;
+		uint8_t Remain2		;
+		uint8_t Remain3		;
 
+	}__attribute__((aligned(1), packed)) B;
 
+}TC_orderEcho_t;
+*/
+typedef union{
+	uint8_t TxData[8];
+	struct{
+		uint8_t TargetDuty_SideIntake ;
+		uint8_t TargetDuty_SegmentIntake70;
+		uint8_t TargetDuty_SegmentExhaust60;
+		uint8_t TargetDuty_SegmentExhaust80;
+		uint8_t Remain1;
+		uint8_t Remain2;
+		uint8_t Remain3;
+		uint8_t Remain4;
+	};
+}FanTargetDuty_t;
 
 
 
@@ -142,9 +157,11 @@ typedef union{
 extern BatteryTemp_t R_BatteryTemp;
 extern BatteryDiagnose_t T_BatteryDiagnose;
 extern FanStatusData_t T_FanStatusData; //230108
-extern TC_order_r R_TC_order; //230108: BC-10 TC RX
-extern TC_order_t T_TC_order; //230204: echo TC order
+extern TC_order_t R_TC_order; //230108: BC-10 TC RX
+extern TC_order_t T_TC_orderEcho;
+//extern TC_orderEcho_t T_TC_order; //230204: echo TC order
 extern uint8_t per; //230204
+extern FanTargetDuty_t T_FanTargetDuty;
 
 extern void GAS_Can_init(void);
 extern void GAS_Can_sendMessage();
