@@ -101,6 +101,11 @@ typedef union{
  * Receive from: VCU
  * RX ID: 0x275B01
  * Data: TCControl mode 0/1, one TCFanDutyOrder for each of 4 segments, in range of 0~100.
+ *
+ * Tx Data
+ * Send to: VCU
+ * TX ID: 0x334C03
+ * Data: Echo the identical data received from VCU
  */
 typedef union{
 	union{
@@ -137,6 +142,13 @@ typedef union{
 
 }TC_orderEcho_t;
 */
+
+/*
+ * TX Data
+ * Transmit to: VCU
+ * TX ID: 0x334C04
+ * Data: Transmit desired duty for 4 fan clusters, in range of 0 to 100.
+ */
 typedef union{
 	uint8_t TxData[8];
 	struct{
