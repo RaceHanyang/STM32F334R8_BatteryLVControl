@@ -34,6 +34,11 @@ uint16_t segmentExhaust80;
 
 volatile uint8_t pwmChangeFlag; //230104: not used in this file//230108: use again
 
+uint8_t risingCNT;
+volatile uint8_t risingCapture[2];
+uint8_t inputPeriod;
+
+
 void GAS_PWM_inputInit(void);
 void GAS_PWM_outputInit(void);
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim);
@@ -110,14 +115,14 @@ void GAS_PWM_Fan_run()
 	if(R_TC_order.B.TCControlMode == 1){
 		per = R_TC_order.B.TCFanDutyOrder_SegmentIntake70;
 
-		FanPulse_SideIntake = R_TC_order.B.TCFanDutyOrder_SideIntake/100.0;
-		FanPulse_SegmentIntake70 = R_TC_order.B.TCFanDutyOrder_SegmentIntake70/100.0;
-		FanPulse_SegmentExhaust60 = R_TC_order.B.TCFanDutyOrder_SegmentExhaust60/100.0;
-		FanPulse_SegmentExhaust80 = R_TC_order.B.TCFanDutyOrder_SegmentExhaust80/100.0;
+		FanPulse_SideIntake 	 	= R_TC_order.B.TCFanDutyOrder_SideIntake/100.0;
+		FanPulse_SegmentIntake70 	= R_TC_order.B.TCFanDutyOrder_SegmentIntake70/100.0;
+		FanPulse_SegmentExhaust60 	= R_TC_order.B.TCFanDutyOrder_SegmentExhaust60/100.0;
+		FanPulse_SegmentExhaust80 	= R_TC_order.B.TCFanDutyOrder_SegmentExhaust80/100.0;
 
-		sideIntake = 287.0*FanPulse_SideIntake;
-		segmentIntake70 = 287.0*FanPulse_SegmentIntake70;	//6ea
-		segmentExhaust60 = 287.0*FanPulse_SideIntake; //3ea
+		sideIntake 		 = 287.0*FanPulse_SideIntake;
+		segmentIntake70  = 287.0*FanPulse_SegmentIntake70;	//6ea
+		segmentExhaust60 = 287.0*FanPulse_SegmentExhaust60; //3ea
 		segmentExhaust80 = 287.0*FanPulse_SegmentExhaust80; //3ea
 
 //		fanPulse = 287*((float)(R_TC_order.B.TCFanDutyOrder/100));
@@ -147,11 +152,11 @@ void GAS_PWM_Fan_run()
 	htim1.Instance -> CCR2 = segmentIntake70;	//parallel
 	htim1.Instance -> CCR3 = segmentIntake70;
 
-	htim2.Instance -> CCR1 = segmentIntake70;
+	htim2.Instance -> CCR1 = segmentExhaust60;//segmentIntake70;
 	htim2.Instance -> CCR2 = segmentExhaust60;
 	htim2.Instance -> CCR3 = segmentExhaust60;
 
-	htim3.Instance -> CCR1 = segmentExhaust60;
+	htim3.Instance -> CCR1 = segmentExhaust80;//segmentExhaust60;
 	htim3.Instance -> CCR2 = segmentExhaust80;
 	htim3.Instance -> CCR3 = segmentExhaust80;
 
@@ -199,30 +204,50 @@ void GAS_PWM_Fan_run()
 		GAS_PWM_Check(&htim15, &pwmIn15); //read fan9
 		GAS_PWM_Check(&htim16, &pwmIn16); //read fan6
 		GAS_PWM_Check(&htim17, &pwmIn17); //read fan3
-		pwmChangeFlag ++;
+		pwmChangeFlag = 1;
 		break;
 	default:
 		pwmChangeFlag = 1;
 	}
 
-
-
 }
+
 
 
 void GAS_PWM_Check(TIM_HandleTypeDef *htim, pwmIn_t *pwmIn){
 
 			if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)
 			{
+				risingCapture[risingCNT] = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
+				pwmIn -> RisingEdgeValue = risingCapture[risingCNT];
+				if(risingCNT == 1){
+					risingCNT = 0;
+					if(risingCapture[0] > risingCapture[1])
+					{
+						inputPeriod = htim->Instance->ARR - risingCapture[0] + risingCapture[1];
+					}
+					else{
+						inputPeriod = risingCapture[1] - risingCapture[0];
+					}
+					inputPeriod += htim->Instance->ARR;
+				}
+				else{
+					risingCNT = 1;
+				}
+				pwmIn->RisingEdgeValue = HAL_TIM_ReadCapturedValue(htim,TIM_CHANNEL_1); //CCR1: pulse
+//				pwmIn->Frequency = (HAL_RCC_GetPCLK1Freq()*2)/(htim->Instance->PSC + 1)/inputPeriod;
+				/*
 				pwmIn->RisingEdgeValue = HAL_TIM_ReadCapturedValue(htim,TIM_CHANNEL_1); //CCR1: pulse
 				htim->Instance->CNT = 0;
 				pwmIn->Period=pwmIn->RisingEdgeValue;
+
+				*/
 			}
 			else if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2)
 			{
-				pwmIn->FallingEdgeValue=HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
-				pwmIn->Width=pwmIn->FallingEdgeValue;
-				pwmIn->DutyCycle = (float)(pwmIn->FallingEdgeValue)/(float)(pwmIn->RisingEdgeValue)*100;
+//				pwmIn->FallingEdgeValue=HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
+//				pwmIn->Width=pwmIn->FallingEdgeValue;
+//				pwmIn->DutyCycle = (float)(pwmIn->FallingEdgeValue)/(float)(pwmIn->RisingEdgeValue)*100;
 			}
 
 }
