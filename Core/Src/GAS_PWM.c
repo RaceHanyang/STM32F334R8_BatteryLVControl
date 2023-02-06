@@ -234,7 +234,8 @@ void GAS_PWM_Check(TIM_HandleTypeDef *htim, pwmIn_t *pwmIn){
 				else{
 					risingCNT = 1;
 				}
-				pwmIn->RisingEdgeValue = HAL_TIM_ReadCapturedValue(htim,TIM_CHANNEL_1); //CCR1: pulse
+				pwmIn->RisingEdgeValue = HAL_TIM_ReadCapturedValue(htim,TIM_CHANNEL_1);
+
 //				pwmIn->Frequency = (HAL_RCC_GetPCLK1Freq()*2)/(htim->Instance->PSC + 1)/inputPeriod;
 				/*
 				pwmIn->RisingEdgeValue = HAL_TIM_ReadCapturedValue(htim,TIM_CHANNEL_1); //CCR1: pulse
