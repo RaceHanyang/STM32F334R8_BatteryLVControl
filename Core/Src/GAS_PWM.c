@@ -143,18 +143,18 @@ void GAS_PWM_Fan_run()
 
 		sideIntake = 287.0*FanPulse_SideIntake;
 		segmentIntake70 = 287.0*FanPulse_SegmentIntake70;	//6ea
-		segmentExhaust60 = 287.0*FanPulse_SideIntake; //3ea
+		segmentExhaust60 = 287.0*FanPulse_SegmentExhaust60; //3ea
 		segmentExhaust80 = 287.0*FanPulse_SegmentExhaust80; //3ea
 	}
 
 	//230204: TODO: set to hardware
-	htim1.Instance -> CCR1 = sideIntake; 		//fan 3 on pcb
+	htim1.Instance -> CCR1 = sideIntake; 		//fan 3 on pcb	//full
 	htim1.Instance -> CCR2 = segmentIntake70;	//fan2
 	htim1.Instance -> CCR3 = segmentIntake70;	//fan1
 
-	htim2.Instance -> CCR1 = segmentExhaust60;	//fan4
-	htim2.Instance -> CCR2 = segmentExhaust60;	//fan5
-	htim2.Instance -> CCR3 = segmentExhaust60;	//fan6
+	htim2.Instance -> CCR1 = segmentExhaust60;	//fan4	//full
+	htim2.Instance -> CCR2 = segmentExhaust60;	//fan5	//full
+	htim2.Instance -> CCR3 = segmentExhaust60;	//fan6	//full
 
 	htim3.Instance -> CCR1 = segmentExhaust80;	//fan7
 	htim3.Instance -> CCR2 = segmentExhaust80;	//fan8
