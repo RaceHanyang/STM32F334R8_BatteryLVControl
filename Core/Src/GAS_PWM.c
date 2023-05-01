@@ -148,17 +148,17 @@ void GAS_PWM_Fan_run()
 	}
 
 	//230204: TODO: set to hardware
-	htim1.Instance -> CCR1 = sideIntake; 		//parallel
-	htim1.Instance -> CCR2 = segmentIntake70;	//parallel
-	htim1.Instance -> CCR3 = segmentIntake70;
+	htim1.Instance -> CCR1 = sideIntake; 		//fan 3 on pcb
+	htim1.Instance -> CCR2 = segmentIntake70;	//fan2
+	htim1.Instance -> CCR3 = segmentIntake70;	//fan1
 
-	htim2.Instance -> CCR1 = segmentExhaust60;//segmentIntake70;
-	htim2.Instance -> CCR2 = segmentExhaust60;
-	htim2.Instance -> CCR3 = segmentExhaust60;
+	htim2.Instance -> CCR1 = segmentExhaust60;	//fan4
+	htim2.Instance -> CCR2 = segmentExhaust60;	//fan5
+	htim2.Instance -> CCR3 = segmentExhaust60;	//fan6
 
-	htim3.Instance -> CCR1 = segmentExhaust80;//segmentExhaust60;
-	htim3.Instance -> CCR2 = segmentExhaust80;
-	htim3.Instance -> CCR3 = segmentExhaust80;
+	htim3.Instance -> CCR1 = segmentExhaust80;	//fan7
+	htim3.Instance -> CCR2 = segmentExhaust80;	//fan8
+	htim3.Instance -> CCR3 = segmentExhaust80;	//fan9
 
 
 	/*testmode*/
